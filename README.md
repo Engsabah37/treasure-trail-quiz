@@ -1,10 +1,22 @@
-# Treasure Trail — Unit 1 Review Game
+# 🏴‍☠️ Treasure Trail
 
-A pastel treasure-hunt review game for WE ATS Grade 1 / Unit 1 (Basic Computer
-Hardware & Software), built with Next.js. Covers all 275 Question Bank items
-(packaged as 260 interactive questions — the 5 "match the column" groups are
-each one matching exercise holding all 4 of their pairs).
+**A full-stack classroom review game — Next.js, Postgres, and a live teacher dashboard.**
 
+Built for WE ATS Grade 1 / Unit 1 (Basic Computer Hardware & Software) by
+Eng. Sabah, to turn a 275-question exam bank into something students actually
+want to practice: a treasure-hunt race against ghost rivals, with every
+question rendered in the UI that fits it, not a one-size-fits-all quiz form.
+
+<p align="center">
+  <img src="docs/screenshot-start.png" width="260" alt="Start screen with mission picker" />
+  <img src="docs/screenshot-game.png" width="260" alt="Think & Check question in play" />
+</p>
+
+## What it does
+
+- **All 275 Question Bank items**, packaged as 260 interactive questions —
+  the 5 "match the column" groups each became one matching exercise holding
+  all 4 of their pairs, so no content was dropped, just combined.
 - Mixed question types, each with its own UI: True/False, Multiple Choice,
   Fill-in-the-blank, Matching (tap-to-pair), and Essay/Compare (type-then-reveal
   self-check).
@@ -19,6 +31,12 @@ each one matching exercise holding all 4 of their pairs).
   behind a single shared password (see step 4 below).
 - A QR code (pointing at the page's own URL) shows on the start and end
   screens, and disappears while a student is mid-quiz.
+
+## Stack
+
+Next.js 14 (App Router) · React · Postgres via Neon (`@neondatabase/serverless`)
+· Edge middleware for password auth · `canvas-confetti` · `qrcode.react` ·
+deployed on Vercel.
 
 ## Deploying on Vercel (first time)
 
