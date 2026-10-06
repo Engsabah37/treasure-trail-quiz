@@ -1,31 +1,14 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import confetti from 'canvas-confetti';
-import QUESTIONS from '../data/questions.json';
 import QuestionCard from './QuestionCard';
 import QRBox from './QRBox';
+import { AVATARS, MISSIONS, LESSON_NAMES, TYPE_NAMES, GHOST_DEFS, QUESTIONS } from '../lib/constants';
 
-const AVATARS = ['🧑‍🚀', '🦸', '🧙', '🥷', '🦊', '🐱', '🐉', '🦄'];
-
-const MISSIONS = [
-  { key: 'L1', label: 'Lesson 1 · Computer Parts', em: '🖥️' },
-  { key: 'L2', label: 'Lesson 2 · Software Types', em: '💾' },
-  { key: 'L3', label: 'Lesson 3 · Installing an OS', em: '⚙️' },
-  { key: 'L4', label: 'Lesson 4 · Files & Folders', em: '📁' },
-  { key: 'L5', label: 'Lesson 5 · BIOS & Boot', em: '🔌' },
-  { key: 'TK03', label: 'Safety Rules', em: '🛡️' },
-  { key: 'TK05', label: 'Troubleshooting', em: '🛠️' },
-  { key: 'ALL', label: `All ${QUESTIONS.length} — Full Marathon`, em: '🏆' },
-];
-
-const LESSON_NAMES = { L1: 'Lesson 1', L2: 'Lesson 2', L3: 'Lesson 3', L4: 'Lesson 4', L5: 'Lesson 5', TK03: 'Safety', TK05: 'Troubleshoot' };
-const TYPE_NAMES = { tf: 'True / False', mcq: 'Multiple Choice', fill: 'Fill in the Blank', match: 'Matching', essay: 'Think & Check' };
-
-const GHOST_DEFS = [
-  { name: 'Lazy Turtle', icon: '🐢', totalSec: 300 },
-  { name: 'Steady Fox', icon: '🦊', totalSec: 220 },
-  { name: 'Quick Falcon', icon: '🦅', totalSec: 150 },
-];
+function makeSessionId() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+  return 'sess-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+}
 
 function shuffled(arr) {
   const a = arr.slice();
@@ -61,6 +44,18 @@ export default function GameApp() {
   const [savedResult, setSavedResult] = useState(false);
   const [copyState, setCopyState] = useState('📋 Copy My Result');
   const [copyHint, setCopyHint] = useState('Paste it in the class WhatsApp or Classroom so your teacher can see it.');
+  const sessionIdRef = useRef(null);
+
+  function sendProgress(payload) {
+    if (!sessionIdRef.current) return;
+    fetch('/api/progress', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: sessionIdRef.current, name: name || 'Explorer', avatar, mission, ...payload }),
+    }).catch(() => {
+      // Best-effort live progress ping — never blocks the student.
+    });
+  }
 
   const missionCounts = useMemo(() => {
     const m = {};
@@ -86,22 +81,34 @@ export default function GameApp() {
     setSavedResult(false);
     setCopyState('📋 Copy My Result');
     setCopyHint('Paste it in the class WhatsApp or Classroom so your teacher can see it.');
+    sessionIdRef.current = makeSessionId();
     setScreen('game');
+    fetch('/api/progress', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId: sessionIdRef.current,
+        name: name || 'Explorer',
+        avatar,
+        mission,
+        idx: 0,
+        total: p.length,
+        score: 0,
+        streak: 0,
+        status: 'playing',
+      }),
+    }).catch(() => {});
   }
 
   function handleAnswer(correct, explainNode) {
     setAnswered(true);
-    if (correct) {
-      setScore((s) => s + 1);
-      setStreak((st) => {
-        const next = st + 1;
-        setBestStreak((b) => Math.max(b, next));
-        return next;
-      });
-    } else {
-      setStreak(0);
-    }
+    const newScore = correct ? score + 1 : score;
+    const newStreak = correct ? streak + 1 : 0;
+    setScore(newScore);
+    setStreak(newStreak);
+    if (newStreak > bestStreak) setBestStreak(newStreak);
     setFeedback({ ok: correct, node: explainNode });
+    sendProgress({ idx: idx + 1, total: pool.length, score: newScore, streak: newStreak, status: 'playing' });
   }
 
   function celebrate() {
@@ -143,6 +150,7 @@ export default function GameApp() {
     }).catch(() => {
       // Best-effort — a failed save never blocks the student from seeing their result.
     });
+    sendProgress({ idx: pool.length, total: pool.length, score, streak, status: 'finished' });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen]);
 

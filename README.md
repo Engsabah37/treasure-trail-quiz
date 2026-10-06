@@ -13,6 +13,10 @@ each one matching exercise holding all 4 of their pairs).
 - Race Map screen with ghost rivals, paced to the chosen mission's length.
 - Every finished game is saved to a Postgres database, with a `/results`
   page for the teacher to see every student's score.
+- A live `/teacher` dashboard updates every 5 seconds while students are
+  playing — name, avatar, lesson, progress bar, current score, and streak —
+  separate from the finished-games history at `/results`. Both pages are
+  behind a single shared password (see step 4 below).
 - A QR code (pointing at the page's own URL) shows on the start and end
   screens, and disappears while a student is mid-quiz.
 
@@ -34,10 +38,17 @@ each one matching exercise holding all 4 of their pairs).
    - Go to **Deployments** → redeploy the latest deployment (or just push
      any commit) so the app picks up the new environment variables.
 
-3. **Done**
+3. **Set a teacher password**
+   - In **Settings → Environment Variables**, add `TEACHER_PASSWORD` with
+     any password you choose (e.g. `trail2026`).
+   - Redeploy once more so it takes effect.
+
+4. **Done**
    - Open your deployment's URL — that's the link/QR code students scan.
-   - Visit `/results` on the same domain any time to see every submitted
-     score.
+   - Visit `/teacher` on the same domain any time to watch students'
+     progress live (updates every 5 seconds) — you'll be asked for the
+     password you set above once per device.
+   - Visit `/results` for the full history of finished games.
 
 ## Local development
 

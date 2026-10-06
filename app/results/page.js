@@ -20,6 +20,9 @@ export default async function ResultsPage() {
           <p>Every student submission, newest first</p>
         </div>
         <div className="screen">
+          <a href="/teacher" style={{ fontSize: '.78rem', color: 'var(--lav-deep)', fontWeight: 800, textDecoration: 'none', display: 'inline-block', marginBottom: 14 }}>
+            ◂ Back to live progress
+          </a>
           {error && <p style={{ color: 'var(--bad)' }}>{error}</p>}
           {!error && rows.length === 0 && <p>No results yet — once students play, their scores will show up here.</p>}
           {!error && rows.length > 0 && (
