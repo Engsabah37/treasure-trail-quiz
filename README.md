@@ -2,6 +2,8 @@
 
 **A full-stack classroom review game — Next.js, Postgres, and a live teacher dashboard.**
 
+**Live demo:** [treasure-trail-quiz.vercel.app](https://treasure-trail-quiz.vercel.app)
+
 Built for WE ATS Grade 1 / Unit 1 (Basic Computer Hardware & Software) by
 Eng. Sabah, to turn a 275-question exam bank into something students actually
 want to practice: a treasure-hunt race against ghost rivals, with every
@@ -87,3 +89,13 @@ only the save-to-database call (and the `/results` page) need the database.
 - `app/api/results/route.js` — saves/lists results (Postgres)
 - `app/results/page.js` — teacher's results table
 - `data/questions.json` — all 260 question records
+
+## License
+
+The code is released under the [MIT License](LICENSE). The question content in
+`data/questions.json` comes from the WE ATS Grade 1 curriculum exam bank and is
+not covered by that license.
+
+## Author
+
+Eng. Sabah Gomaa — [GitHub](https://github.com/Engsabah37) · [LinkedIn](https://www.linkedin.com/in/sabah-gomaa-90a8361b7)
